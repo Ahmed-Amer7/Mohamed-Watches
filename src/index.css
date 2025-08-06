@@ -1,0 +1,24 @@
+@import url('https://fonts.googleapis.com/css2?family=Alexandria:wght@100..900&display=swap');
+@import "tailwindcss";
+
+@theme {
+    --breakpoint-sm: 360px;
+
+    --font-primary: "Alexandria", "sans-serif";
+    --font-weight-light: 300;
+}
+
+html, body, #root {
+  height: 100%;
+  overflow: hidden;
+}
+
+/* hide scrollbar across browsers */
+.no-scrollbar {
+  scrollbar-width: none;    
+  -ms-overflow-style: none;   
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;           
+}
