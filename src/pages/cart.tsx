@@ -105,8 +105,6 @@ function Cart() {
         }
     }, [watches]);
 
-    console.log(cartItems);
-
     return (
         <div className="h-full w-full overflow-y-scroll bg-[#eeeeee] sm:p-5">
 
