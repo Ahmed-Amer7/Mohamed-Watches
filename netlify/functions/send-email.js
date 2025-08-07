@@ -1,5 +1,3 @@
-const { post } = require("axios");
-
 require("dotenv").config();
 
 export async function handler(event, context) {
@@ -20,42 +18,50 @@ export async function handler(event, context) {
   }
 
   try {
-    const response = await post(
-      "https://api.brevo.com/v3/smtp/email",
-      {
+    const response = await fetch("https://api.brevo.com/v3/smtp/email", {
+      method: "POST",
+      headers: {
+        "api-key": process.env.BREVO_API_KEY,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
         sender: {
           name: "Mohamed Watches",
-          email: "mohamed.watches0@gmail.com", // Must be a verified sender in Brevo
+          email: "mohamed.watches0@gmail.com",
         },
         to: [{ email: to }],
         subject: subject,
         htmlContent: htmlContent,
-      },
-      {
-        headers: {
-          "api-key": process.env.BREVO_API_KEY,
-          "Content-Type": "application/json",
-        },
-      }
-    );
+      }),
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      console.error("Email sending failed:", data);
+      return {
+        statusCode: response.status,
+        body: JSON.stringify({
+          message: "Email sending failed",
+          error: data,
+        }),
+      };
+    }
 
     return {
       statusCode: 200,
       body: JSON.stringify({
         message: "Email sent successfully",
-        response: response.data,
+        response: data,
       }),
     };
   } catch (error) {
-    console.error(
-      "Email sending failed:",
-      error.response?.data || error.message
-    );
+    console.error("Email sending failed:", error.message);
     return {
       statusCode: 500,
       body: JSON.stringify({
         message: "Email sending failed",
-        error: error.response?.data || error.message,
+        error: error.message,
       }),
     };
   }
