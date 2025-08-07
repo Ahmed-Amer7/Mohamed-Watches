@@ -1,4 +1,4 @@
-import { post } from "axios";
+const { post } = require("axios");
 
 require("dotenv").config();
 
@@ -24,7 +24,7 @@ export async function handler(event, context) {
       "https://api.brevo.com/v3/smtp/email",
       {
         sender: {
-          name: "Your Company",
+          name: "Mohamed Watches",
           email: "mohamed.watches0@gmail.com", // Must be a verified sender in Brevo
         },
         to: [{ email: to }],

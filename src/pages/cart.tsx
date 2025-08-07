@@ -40,16 +40,33 @@ function Cart() {
                     "Content-Type": "application/json",
                 },
                 body: JSON.stringify({
-                    to: email, // send to the user email
+                    to: email,
+                    subject: "Order Confirmation",
+                    htmlContent: emailContent,
+                }),
+            });
+
+            const response2 = await fetch("/.netlify/functions/send-email", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    to: "mohamed.watches0@gmail.com",
                     subject: "Order Confirmation",
                     htmlContent: emailContent,
                 }),
             });
 
             const data = await response.json();
+            const data2 = await response2.json();
 
             if (!response.ok) {
                 throw new Error(data.message || "Failed to send email");
+            }
+
+            if (!response2.ok) {
+                throw new Error(data2.message || "Failed to send email");
             }
 
             alert("Order placed and email sent successfully!");
@@ -61,8 +78,9 @@ function Cart() {
             setAddress("");
             setEmail("");
 
-        } catch (error) {
-            alert("Error placing order: ");
+        } catch (error: any) {
+            console.error("Order placement error:", error);
+            alert("Error placing order: " + (error.message || "Unknown error"));
         }
     };
 
@@ -162,7 +180,7 @@ function Cart() {
                         onFocus={() => setIsEmailFocused(true)}
                         onBlur={() => setIsEmailFocused(false)}
                     />
-                    <span className={`absolute right-4 top-2 font-primary font-light ${isEmailFocused || address.length > 0 ? "invisible" : ""}`}>الايميل</span>
+                    <span className={`absolute right-4 top-2 font-primary font-light ${isEmailFocused || email.length > 0 ? "invisible" : ""}`}>الايميل</span>
                 </div>
             </div>
 
