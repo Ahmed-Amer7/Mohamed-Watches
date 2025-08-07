@@ -203,7 +203,7 @@ function Cart() {
                 </div>
                 <div className="w-full h-[60px] bg-[#D9D9D9] relative">
                     <input
-                        className="w-full h-[60px] bg-red-500 text-end px-4 text-[20px] font-light"
+                        className="w-full h-[60px] text-end px-4 text-[20px] font-light"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
                         onFocus={() => setIsEmailFocused(true)}
