@@ -21,6 +21,37 @@ function Cart() {
     const [cartItems, setCartItems] = useState<any[]>([]);
 
     const handlePlaceOrder = async () => {
+        if (cartItems.length === 0) {
+            alert("سلة التسوق فارغة. يرجى إضافة ساعات لإتمام الطلب.");
+            return;
+        }
+
+        const invalidItem = cartItems.find(item => item.quantity <= 0);
+        if (invalidItem) {
+            alert(`العنصر "${invalidItem.title}" يحتوي على كمية غير صالحة. يرجى تعديلها قبل إتمام الطلب.`);
+            return;
+        }
+
+        if (name.length <= 0) {
+            alert(`املئ الاسم`);
+            return;
+        }
+
+        if (email.length <= 0) {
+            alert(`املئ الايميل`)
+            return;
+        }
+
+        if (phone.length <= 0) {
+            alert(`املئ رقم الهاتف`)
+            return;
+        }
+
+        if (address.length <= 0) {
+            alert(`املئ العنوان`)
+            return;
+        }
+
         const emailContent = `
             <h2>New Order</h2>
             <p><strong>Name:</strong> ${name}</p>
@@ -29,7 +60,7 @@ function Cart() {
             <p><strong>Email:</strong> ${email}</p>
             <h3>Items:</h3>
             <ul>
-            ${cartItems.map(item => `<li>${item.title}</li>`).join("")}
+            ${cartItems.map(item => `<li>${item.title} (Qty: ${item.quantity})</li>`).join("")}
             </ul>
         `;
 
@@ -142,7 +173,7 @@ function Cart() {
             <div className="w-full flex flex-col gap-y-4 mt-10">
                 <div className="w-full h-[60px] bg-[#D9D9D9] relative">
                     <input
-                        className="w-full h-full text-end p-4 font-primary font-light"
+                        className="w-full h-full text-end px-4 font-light text-[20px]"
                         value={name}
                         onChange={(e) => setName(e.target.value)}
                         onFocus={() => setIsNameFocused(true)}
@@ -152,7 +183,7 @@ function Cart() {
                 </div>
                 <div className="w-full h-[60px] bg-[#D9D9D9] relative">
                     <input
-                        className="w-full h-full text-end p-4 font-primary font-light"
+                        className="w-full h-full text-end px-4 font-light text-[20px]"
                         value={phone}
                         onChange={(e) => setPhone(e.target.value)}
                         onFocus={() => setIsPhoneFocused(true)}
@@ -162,7 +193,7 @@ function Cart() {
                 </div>
                 <div className="w-full h-[60px] bg-[#D9D9D9] relative">
                     <input
-                        className="w-full h-full text-end p-4 font-primary font-light"
+                        className="w-full h-full text-end px-4 font-light text-[20px]"
                         value={address}
                         onChange={(e) => setAddress(e.target.value)}
                         onFocus={() => setIsAddressFocused(true)}
@@ -172,7 +203,7 @@ function Cart() {
                 </div>
                 <div className="w-full h-[60px] bg-[#D9D9D9] relative">
                     <input
-                        className="w-full h-full text-end p-4 font-primary font-light"
+                        className="w-full h-[60px] bg-red-500 text-end px-4 text-[20px] font-light"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
                         onFocus={() => setIsEmailFocused(true)}
