@@ -4,6 +4,8 @@ import CartItem from "../components/CartItem";
 import { useGetWatches } from "../services/watches";
 
 function Cart() {
+    const [totalPrice, setTotalPrice] = useState(0);
+
     const [name, setName] = useState("");
     const [isNameFocused, setIsNameFocused] = useState(false);
 
@@ -60,7 +62,7 @@ function Cart() {
             <p><strong>Email:</strong> ${email}</p>
             <h3>Items:</h3>
             <ul>
-            ${cartItems.map(item => `<li>${item.title} (Qty: ${item.quantity})</li>`).join("")}
+            ${cartItems.map(item => `<li>${item.title}</li>`).join("")}
             </ul>
         `;
 
@@ -133,6 +135,9 @@ function Cart() {
             // Filter watches to only those in cart
             const itemsInCart = watches.filter(watch => cartIds.includes(watch._id));
             setCartItems(itemsInCart);
+
+            const total = itemsInCart.reduce((acc, item) => acc + (item.price || 0), 0);
+            setTotalPrice(total);
         }
     }, [watches]);
 
@@ -216,8 +221,14 @@ function Cart() {
             {/* Button */}
 
             <div className="w-full flex justify-center mt-8">
-                <div onClick={handlePlaceOrder} className="cursor-pointer w-[300px] h-[80px] bg-[#D9D9D9] flex justify-center items-center border-[1px] active:bg-[#AAAAAA] transition duration-200">
-                    <span className="font-primary text-[20px]">تثبيت الطلب</span>
+                <div className="w-[250px] flex justify-center">
+                    <div onClick={handlePlaceOrder} className="cursor-pointer w-[200px] h-[80px] bg-[#D9D9D9] flex justify-center items-center border-[1px] active:bg-[#AAAAAA] transition duration-200">
+                        <span className="font-primary text-[20px]">تثبيت الطلب</span>
+                    </div>
+                </div>
+                <div className="w-[25%] h-[80px] flex flex-col gap-4 justify-center items-end pr-4">
+                    <span className="font-primary">المجموع</span>
+                    <span className="font-primary">${totalPrice.toLocaleString()}</span>
                 </div>
             </div>
         </div>
