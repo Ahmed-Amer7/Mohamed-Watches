@@ -4,6 +4,7 @@ import { urlFor } from "../lib/sanity";
 import { Link } from "react-router-dom";
 
 interface Props {
+    id: string;
     title: string;
     price: number;
     image: SanityImage;
@@ -12,7 +13,7 @@ interface Props {
     watch_type_filter: string[];
 }
 
-function WatchComponent({ title, price, image, type, range_filter, watch_type_filter }: Props) {
+function WatchComponent({ id, title, price, image, type, range_filter, watch_type_filter }: Props) {
     const [imageUrl, setImageUrl] = useState<string | null>(null);
 
     useEffect(() => {
@@ -33,7 +34,7 @@ function WatchComponent({ title, price, image, type, range_filter, watch_type_fi
     if (!imageUrl) return <div>Loading image...</div>;
     
     return (
-        <Link to={`watch/${title}`} className="bg-white sm:h-[240px] sm:w-[98%] mx-auto flex flex-col gap-2 p-2 active:opacity-50 transition-opacity duration-100">
+        <Link to={`watch/${id}`} className="bg-white sm:h-[240px] sm:w-[98%] mx-auto flex flex-col gap-2 p-2 active:opacity-50 transition-opacity duration-100">
             <div className="sm:w-full sm:h-[400px] flex justify-center items-center">
                 <img src={imageUrl} className="w-full h-[160px]" />
             </div>

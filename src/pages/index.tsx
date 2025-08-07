@@ -109,6 +109,7 @@ function Index() {
                 {watches?.map((watch) => (
                     <WatchComponent 
                         key={watch._id}
+                        id={watch._id}
                         range_filter={value}
                         watch_type_filter={watchTypeFilter}
                         type={watch.category}

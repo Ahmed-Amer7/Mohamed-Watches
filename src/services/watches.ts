@@ -23,12 +23,11 @@ export type SanityImage = {
 
 export type Category = "Audemars Piguet" | "Rolex" | "Cartier" | "Patek Philippe" | "Omega" | "Citizen";
 
-
 export const useGetWatches = () => {
   return useQuery<Watch[]>({
     queryKey: ['watches'],
     queryFn: async () => {
-      const query = `*[_type == "watch"]{_id, title, body, price, images, category}`
+      const query = `*[_type == "watch"]{_id, title, body, price, images, category, quantity}`
       const data = await sanityClient.fetch<Watch[]>(query)
       return data
     },

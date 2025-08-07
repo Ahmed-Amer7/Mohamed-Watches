@@ -1,7 +1,7 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Header from "../components/Header";
-
 import CartItem from "../components/CartItem";
+import { useGetWatches } from "../services/watches";
 
 function Cart() {
     const [name, setName] = useState("");
@@ -13,6 +13,81 @@ function Cart() {
     const [address, setAddress] = useState("");
     const [isAddressFocused, setIsAddressFocused] = useState(false);
 
+    const [email, setEmail] = useState("");
+    const [isEmailFocused, setIsEmailFocused] = useState(false);
+
+    const { data: watches } = useGetWatches();
+
+    const [cartItems, setCartItems] = useState<any[]>([]);
+
+    const handlePlaceOrder = async () => {
+        const emailContent = `
+            <h2>New Order</h2>
+            <p><strong>Name:</strong> ${name}</p>
+            <p><strong>Phone:</strong> ${phone}</p>
+            <p><strong>Address:</strong> ${address}</p>
+            <p><strong>Email:</strong> ${email}</p>
+            <h3>Items:</h3>
+            <ul>
+            ${cartItems.map(item => `<li>${item.title}</li>`).join("")}
+            </ul>
+        `;
+
+        try {
+            const response = await fetch("/.netlify/functions/send-email", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    to: email, // send to the user email
+                    subject: "Order Confirmation",
+                    htmlContent: emailContent,
+                }),
+            });
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                throw new Error(data.message || "Failed to send email");
+            }
+
+            alert("Order placed and email sent successfully!");
+
+            localStorage.removeItem("cart");
+            setCartItems([]);
+            setName("");
+            setPhone("");
+            setAddress("");
+            setEmail("");
+
+        } catch (error) {
+            alert("Error placing order: ");
+        }
+    };
+
+    const handleRemove = (id: string) => {
+        // Remove from localStorage
+        const cartIds: string[] = JSON.parse(localStorage.getItem("cart") || "[]");
+        const updatedCart = cartIds.filter(cartId => cartId !== id);
+        localStorage.setItem("cart", JSON.stringify(updatedCart));
+
+        // Update local state
+        setCartItems((prev) => prev.filter(item => item._id !== id));
+    };
+
+    useEffect(() => {
+        // Get cart IDs from localStorage
+        const cartIds: string[] = JSON.parse(localStorage.getItem("cart") || "[]");
+
+        if (watches && watches.length) {
+            // Filter watches to only those in cart
+            const itemsInCart = watches.filter(watch => cartIds.includes(watch._id));
+            setCartItems(itemsInCart);
+        }
+    }, [watches]);
+
+    console.log(cartItems);
 
     return (
         <div className="h-full w-full overflow-y-scroll bg-[#eeeeee] sm:p-5">
@@ -27,43 +102,79 @@ function Cart() {
                 <span className="font-primary sm:text-[18px]">السلة</span>
             </div>
 
-            {/* Items in Cart (TEMPORARY) */}
+            {/* Separator */}
 
+            <div className="w-[200px] bg-black h-[2px] flex mx-auto mt-8"></div>
+
+            {/* Items in Cart */}
             <div className="w-full flex flex-col justify-center items-center mt-2">
-                <CartItem name="Audemars Piguet Royal Oak Panda" />
-                <CartItem name="Rolex Cosmograph Daytona Panda Dial" />
+                {cartItems.length > 0 ? (
+                    cartItems.map(item => (
+                        <CartItem onRemove={handleRemove} key={item._id} image={item.images?.[0]} id={item._id} name={item.title} />
+                    ))
+                ) : (
+                    <p className="font-primary text-center mt-4">السلة فارغة</p>
+                )}
             </div>
 
             {/* Separator */}
 
-            <div className="w-[250px] bg-black h-[2px] flex mx-auto mt-8"></div>
+            <div className="w-[200px] bg-black h-[2px] flex mx-auto mt-8"></div>
 
             {/* Inputs */}
 
             <div className="w-full flex flex-col gap-y-4 mt-10">
                 <div className="w-full h-[60px] bg-[#D9D9D9] relative">
-                    <input className="w-full h-full text-end p-4 font-primary font-light" value={name} onChange={(e) => setName(e.target.value)} onFocus={() => setIsNameFocused(true)} onBlur={() => setIsNameFocused(false)} />
+                    <input
+                        className="w-full h-full text-end p-4 font-primary font-light"
+                        value={name}
+                        onChange={(e) => setName(e.target.value)}
+                        onFocus={() => setIsNameFocused(true)}
+                        onBlur={() => setIsNameFocused(false)}
+                    />
                     <span className={`absolute right-4 top-2 font-primary font-light ${isNameFocused || name.length > 0 ? "invisible" : ""}`}>الاسم</span>
                 </div>
                 <div className="w-full h-[60px] bg-[#D9D9D9] relative">
-                    <input className="w-full h-full text-end p-4 font-primary font-light" value={phone} onChange={(e) => setPhone(e.target.value)} onFocus={() => setIsPhoneFocused(true)} onBlur={() => setIsPhoneFocused(false)} />
+                    <input
+                        className="w-full h-full text-end p-4 font-primary font-light"
+                        value={phone}
+                        onChange={(e) => setPhone(e.target.value)}
+                        onFocus={() => setIsPhoneFocused(true)}
+                        onBlur={() => setIsPhoneFocused(false)}
+                    />
                     <span className={`absolute right-4 top-2 font-primary font-light ${isPhoneFocused || phone.length > 0 ? "invisible" : ""}`}>رقم الهاتف</span>
                 </div>
                 <div className="w-full h-[60px] bg-[#D9D9D9] relative">
-                    <input className="w-full h-full text-end p-4 font-primary font-light" value={address} onChange={(e) => setAddress(e.target.value)} onFocus={() => setIsAddressFocused(true)} onBlur={() => setIsAddressFocused(false)} />
+                    <input
+                        className="w-full h-full text-end p-4 font-primary font-light"
+                        value={address}
+                        onChange={(e) => setAddress(e.target.value)}
+                        onFocus={() => setIsAddressFocused(true)}
+                        onBlur={() => setIsAddressFocused(false)}
+                    />
                     <span className={`absolute right-4 top-2 font-primary font-light ${isAddressFocused || address.length > 0 ? "invisible" : ""}`}>العنوان</span>
+                </div>
+                <div className="w-full h-[60px] bg-[#D9D9D9] relative">
+                    <input
+                        className="w-full h-full text-end p-4 font-primary font-light"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        onFocus={() => setIsEmailFocused(true)}
+                        onBlur={() => setIsEmailFocused(false)}
+                    />
+                    <span className={`absolute right-4 top-2 font-primary font-light ${isEmailFocused || address.length > 0 ? "invisible" : ""}`}>الايميل</span>
                 </div>
             </div>
 
             {/* Button */}
 
             <div className="w-full flex justify-center mt-8">
-                <div className="cursor-pointer w-[300px] h-[80px] bg-[#D9D9D9] flex justify-center items-center border-[1px] active:bg-[#AAAAAA] transition duration-200">
+                <div onClick={handlePlaceOrder} className="cursor-pointer w-[300px] h-[80px] bg-[#D9D9D9] flex justify-center items-center border-[1px] active:bg-[#AAAAAA] transition duration-200">
                     <span className="font-primary text-[20px]">تثبيت الطلب</span>
                 </div>
             </div>
         </div>
-    )
+    );
 }
 
 export default Cart;

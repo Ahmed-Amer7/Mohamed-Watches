@@ -1,28 +1,28 @@
 import { useEffect, useState } from "react";
 import remove from "../assets/remove.png";
-import { useGetWatches, type SanityImage } from "../services/watches";
+import { type SanityImage } from "../services/watches";
 import { urlFor } from "../lib/sanity";
 
 interface Props {
     name: string;
-    image?: SanityImage;
+    id: string; 
+    onRemove: (id: string) => void;
+    image: SanityImage;
 }
 
-function CartItem({ name }: Props) {
-    let { data: watches } = useGetWatches();
-
+function CartItem({ id, name, image, onRemove }: Props) {
     const [imageUrl, setImageUrl] = useState<string | null>(null);
 
     useEffect(() => {
-        if (watches?.[0].images?.[0] && watches?.[0]?.images?.[0].asset?._ref) {
-            const url = urlFor(watches?.[0].images?.[0]).url();
+        if (image && image.asset?._ref) {
+            const url = urlFor(image).url();
             setImageUrl(url);
         }
-    }, [watches?.[0].images?.[0]]);
+    }, [image]);
 
     return (
-        <div className="w-full flex flex-row justify-center items-center gap-4 px-4">
-            <div>
+        <div className="w-full flex flex-row justify-center items-center gap-4 px-2">
+            <div onClick={() => onRemove(id)} className="cursor-pointer">
                 <img src={remove} className="w-6 h-6" />
             </div>
             <div className="text-center w-[300px]">
