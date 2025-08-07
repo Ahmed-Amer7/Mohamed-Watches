@@ -1,4 +1,10 @@
-require("dotenv").config();
+if (process.env.NODE_ENV !== "production") {
+  try {
+    require("dotenv").config();
+  } catch (err) {
+    console.warn("dotenv not loaded — likely in production.");
+  }
+}
 
 export async function handler(event, context) {
   if (event.httpMethod !== "POST") {
