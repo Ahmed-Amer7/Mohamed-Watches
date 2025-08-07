@@ -6,7 +6,7 @@ import Slider from '@mui/material/Slider';
 import WatchComponent from "../components/WatchComponent";
 import Header from "../components/Header";
 
-const minDistance = 10;
+const minDistance = 50;
 
 function Index() {
     const [value, setValue] = useState<number[]>([500, 5000]);
@@ -93,8 +93,8 @@ function Index() {
                         onChange={handleChange}
                         valueLabelDisplay="auto"
                         valueLabelFormat={(val) => `$${val.toLocaleString()}`} 
-                        min={10}
-                        max={10000}
+                        min={50}
+                        max={100000}
                         sx={{
                             color: "black",
                             height: "4px",

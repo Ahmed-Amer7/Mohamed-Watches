@@ -17,18 +17,23 @@ function Toast({ message }: { message: string }) {
 // === PortableText Components ===
 const components = {
   block: {
-    normal: (props: { children?: React.ReactNode }) => {
-      const text = props.children?.toString() || '';
+    normal: ({ children }: { children?: React.ReactNode }) => {
+      // Attempt to extract text content only for colon logic
+      const plainText = Array.isArray(children)
+        ? children.map((c) => (typeof c === 'string' ? c : '')).join('')
+        : typeof children === 'string'
+        ? children
+        : '';
 
-      if (!text.includes(':')) {
+      if (!plainText.includes(':')) {
         return (
           <p className="font-primary font-extralight text-right mt-4">
-            {text}
+            {children}
           </p>
         );
       }
 
-      const [key, ...rest] = text.split(':');
+      const [key, ...rest] = plainText.split(':');
       const value = rest.join(':').trim();
 
       return (
